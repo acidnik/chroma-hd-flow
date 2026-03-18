@@ -22,7 +22,6 @@ from torchastic.stochastic_optim import copy_stochastic_, Optimizer
 import random
 
 from transformers import T5Tokenizer
-import wandb
 import shutil
 from torchvision import transforms
 
@@ -51,7 +50,6 @@ from ramtorch.zero1 import create_zero_param_groups, broadcast_zero_params
 from huggingface_hub import HfApi, upload_file
 import time
 
-from aim import Run, Image as AimImage
 from datetime import datetime
 from PIL import Image as PILImage
 
@@ -597,8 +595,11 @@ def train_chroma(rank, world_size, debug=False, json_config="training_config.jso
     ]
 
     # Setup Aim run
+    run = None
     if training_config.aim_path is not None and rank == 0:
         # current_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        from aim import Run
+
         run = Run(
             repo=training_config.aim_path,
             run_hash=training_config.aim_hash,
@@ -752,14 +753,13 @@ def train_chroma(rank, world_size, debug=False, json_config="training_config.jso
                 desc=f"preparing latents, Rank {rank}",
                 position=rank,
             ):
-                with torch.no_grad(), torch.autocast(
-                    device_type="cuda", dtype=torch.bfloat16
+                with (
+                    torch.no_grad(),
+                    torch.autocast(device_type="cuda", dtype=torch.bfloat16),
                 ):
-
                     latents = ae.encode_for_train(
                         images[
-                            mb_i
-                            * training_config.cache_minibatch : mb_i
+                            mb_i * training_config.cache_minibatch : mb_i
                             * training_config.cache_minibatch
                             + training_config.cache_minibatch
                         ].to(rank)
@@ -772,8 +772,9 @@ def train_chroma(rank, world_size, debug=False, json_config="training_config.jso
             acc_images = torch.cat(acc_images, dim=0)
 
             # process the full batch now!
-            with torch.no_grad(), torch.autocast(
-                device_type="cuda", dtype=torch.bfloat16
+            with (
+                torch.no_grad(),
+                torch.autocast(device_type="cuda", dtype=torch.bfloat16),
             ):
                 # prepare flat image and the target lerp
                 (
@@ -823,8 +824,9 @@ def train_chroma(rank, world_size, debug=False, json_config="training_config.jso
                 position=rank,
             ):
                 # MODIFICATION START: T5 computation is now inside the minibatch loop
-                with torch.no_grad(), torch.autocast(
-                    device_type="cuda", dtype=torch.bfloat16
+                with (
+                    torch.no_grad(),
+                    torch.autocast(device_type="cuda", dtype=torch.bfloat16),
                 ):
                     # 1. Move T5 to GPU for this minibatch
                     t5.to(rank)
@@ -954,11 +956,12 @@ def train_chroma(rank, world_size, debug=False, json_config="training_config.jso
                     # The aggregation now works with Python floats, no tensor involved
                     final_loss_value = sum(loss_log) / len(loss_log)
                     # if you need it as a tensor for tracking:
-                    loss_log_tensor = torch.tensor(final_loss_value, device=rank)
-                    run.track(loss_log_tensor, name="loss", step=global_step)
-                    run.track(
-                        training_config.lr, name="learning_rate", step=global_step
-                    )
+                    if run is not None:
+                        loss_log_tensor = torch.tensor(final_loss_value, device=rank)
+                        run.track(loss_log_tensor, name="loss", step=global_step)
+                        run.track(
+                            training_config.lr, name="learning_rate", step=global_step
+                        )
 
             dataloader_config.offset += 1
 
@@ -1062,7 +1065,6 @@ def train_chroma(rank, world_size, debug=False, json_config="training_config.jso
 
                 # Part 2: Rank 0 is responsible for collating images and prompts.
                 if rank == 0:
-
                     all_images_for_grid = []
                     all_prompts_for_caption = []
 
@@ -1110,8 +1112,13 @@ def train_chroma(rank, world_size, debug=False, json_config="training_config.jso
                         # Track the final collaged image and its combined caption with Aim
                         final_pil_image = PILImage.open(final_image_path)
                         combined_caption = "\n---\n".join(all_prompts_for_caption)
-                        aim_img = AimImage(final_pil_image, caption=combined_caption)
-                        run.track(aim_img, name="example_image", step=global_step)
+                        if run is not None:
+                            from aim import Image as AimImage
+
+                            aim_img = AimImage(
+                                final_pil_image, caption=combined_caption
+                            )
+                            run.track(aim_img, name="example_image", step=global_step)
 
                         # Clean up memory
                         del final_grid
