@@ -66,6 +66,7 @@ class TrainingConfig:
     warmup_steps: int
     save_every: int
     save_folder: str
+    max_batches: Optional[int] = None
     aim_path: Optional[str] = None
     aim_experiment_name: Optional[str] = None
     aim_hash: Optional[str] = None
@@ -1145,6 +1146,17 @@ def train_chroma(rank, world_size, debug=False, json_config="training_config.jso
             # flush
             acc_embeddings = []
             global_step += 1
+
+            # Check if max_batches reached
+            if (
+                training_config.max_batches is not None
+                and global_step >= training_config.max_batches
+            ):
+                if rank == 0:
+                    print(
+                        f"Reached max_batches={training_config.max_batches}, exiting..."
+                    )
+                break
 
         # save final model
         if rank == 0:
