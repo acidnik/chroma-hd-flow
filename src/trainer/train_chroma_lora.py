@@ -1126,10 +1126,12 @@ def train_chroma(rank, world_size, debug=False, json_config="training_config.jso
                             )
                             run.track(aim_img, name="example_image", step=global_step)
 
+                            # Clean up memory
+                            del aim_img
+
                         # Clean up memory
                         del final_grid
                         del final_pil_image
-                        del aim_img
                         del all_images_for_grid
 
                     # Clean up the temporary directory now that its contents are processed
