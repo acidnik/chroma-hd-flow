@@ -463,6 +463,8 @@ def _modulation_shift_scale_fn(x, scale, shift):
 
 
 def _modulation_gate_fn(x, gate, gate_params):
+    if x is None or gate is None or gate_params is None:
+        print(f"{x, gate, gate_params=} is None?")
     return x + gate * gate_params
 
 
