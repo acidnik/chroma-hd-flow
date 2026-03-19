@@ -722,7 +722,11 @@ def train_chroma(rank, world_size, debug=False, json_config="training_config.jso
     # ==========================================================================
 
     global_step = training_config.aim_steps
+    max_batches_reached = False
     while True:
+        if max_batches_reached:
+            break
+
         training_config.master_seed += 1
         torch.manual_seed(training_config.master_seed)
         dataloader = DataLoader(
@@ -1146,6 +1150,7 @@ def train_chroma(rank, world_size, debug=False, json_config="training_config.jso
             # flush
             acc_embeddings = []
             global_step += 1
+            print(f"step {global_step}")
 
             # Check if max_batches reached
             if (
@@ -1156,6 +1161,7 @@ def train_chroma(rank, world_size, debug=False, json_config="training_config.jso
                     print(
                         f"Reached max_batches={training_config.max_batches}, exiting..."
                     )
+                max_batches_reached = True
                 break
 
         # save final model
@@ -1186,5 +1192,9 @@ def train_chroma(rank, world_size, debug=False, json_config="training_config.jso
                     training_config.hf_token,
                 )
             torch.cuda.empty_cache()
+
+        if max_batches_reached:
+            break
+
     if not debug:
         dist.destroy_process_group()
