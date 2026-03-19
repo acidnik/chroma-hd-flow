@@ -9,7 +9,7 @@
         "weight_decay": 0.0001,
         "warmup_steps": 1,
         "save_every": 10,
-        "save_folder": "testing_lora",
+        "save_folder": "xrmduu/output",
         "aim_path": null,
         "aim_experiment_name": null,
         "aim_hash": null,
@@ -19,7 +19,7 @@
     },
     "inference": {
         "inference_every": 10,
-        "inference_folder": "inference_folder",
+        "inference_folder": "xrmduu/inference",
         "steps": 20,
         "guidance": 3,
         "cfg": 1,
@@ -36,7 +36,7 @@
     "extra_inference_config":[
         {
             "inference_every": 100,
-            "inference_folder": "inference_folder",
+            "inference_folder": "xrmduu/inference",
             "steps": 20,
             "guidance": 3,
             "cfg": 4,
@@ -52,7 +52,7 @@
     ],
     "dataloader": {
         "batch_size": 4,
-        "jsonl_metadata_path": "chroma-54.jsonl",
+        "jsonl_metadata_path": "xrmduu.jsonl",
         "image_folder_path": ".",
         "base_resolution": [
             512
