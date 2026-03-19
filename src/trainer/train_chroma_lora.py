@@ -455,8 +455,9 @@ def save_part(model, trained_layer_keywords, counter, save_folder):
         if any(keyword in k for keyword in trained_layer_keywords):
             filtered_state_dict[k] = v
 
-    torch.save(
-        filtered_state_dict, os.path.join(save_folder, f"trained_part_{counter}.pth")
+    save_file(
+        filtered_state_dict,
+        os.path.join(save_folder, f"trained_part_{counter}.safetensors"),
     )
 
 
@@ -974,8 +975,8 @@ def train_chroma(rank, world_size, debug=False, json_config="training_config.jso
                     if any(keyword in k for keyword in trained_layer_keywords):
                         lora_state_dict[k] = v
 
-                model_filename = f"{training_config.save_folder}/{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_lora.pth"
-                torch.save(lora_state_dict, model_filename)
+                model_filename = f"{training_config.save_folder}/{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_lora.safetensors"
+                save_file(lora_state_dict, model_filename)
                 # ====================================================
 
                 config_data["dataloader"]["offset"] = dataloader_config.offset
@@ -1148,8 +1149,8 @@ def train_chroma(rank, world_size, debug=False, json_config="training_config.jso
                 if any(keyword in k for keyword in trained_layer_keywords):
                     lora_state_dict[k] = v
 
-            model_filename = f"{training_config.save_folder}/{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_lora.pth"
-            torch.save(lora_state_dict, model_filename)
+            model_filename = f"{training_config.save_folder}/{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_lora.safetensors"
+            save_file(lora_state_dict, model_filename)
             # ====================================================
 
             config_data["dataloader"]["offset"] = dataloader_config.offset

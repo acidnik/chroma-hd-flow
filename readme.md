@@ -1,4 +1,10 @@
 # Flow Matching Trainer
+```
+wget https://huggingface.co/lodestones/Chroma1-HD/resolve/main/Chroma1-HD.safetensors
+wget https://huggingface.co/frankjoshua/FLUX.1-dev/resolve/main/ae.safetensors
+wget https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp16.safetensors
+git clone https://huggingface.co/SaulLu/bengali-tokenizer-v2 tokenizer_2
+```
 
 A powerful training toolkit for image generation models using Flow Matching technique.
 

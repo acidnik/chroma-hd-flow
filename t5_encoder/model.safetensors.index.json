@@ -1,0 +1,8 @@
+{
+  "metadata": {
+    "total_size": 9787841024
+  },
+  "weight_map": {
+    "t5xxl_fp16.safetensors": "t5xxl_fp16.safetensors"
+  }
+}

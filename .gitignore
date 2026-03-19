@@ -13,3 +13,9 @@ datasets
 /models
 scribble*
 /wandb
+
+*.safetensors
+testing_lora/
+text_encoder_2/
+tokenizer_2/
+t5_encoder/*.safetensors

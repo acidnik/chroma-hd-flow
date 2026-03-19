@@ -16,3 +16,4 @@ torchastic
 huggingface_hub
 scipy
 ramtorch
+psutil
