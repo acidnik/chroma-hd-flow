@@ -511,8 +511,8 @@ def inference_wrapper(
     # test inference
     # aliasing
     SEED = seed
-    WIDTH = image_dim[0]
-    HEIGHT = image_dim[1]
+    HEIGHT = image_dim[0]  # [height, width] convention
+    WIDTH = image_dim[1]
     STEPS = steps
     GUIDANCE = guidance
     CFG = cfg
