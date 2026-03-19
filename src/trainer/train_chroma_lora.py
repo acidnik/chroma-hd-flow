@@ -1013,10 +1013,10 @@ def train_chroma(rank, world_size, debug=False, json_config="training_config.jso
                     inference_config.inference_folder, f"step_{counter}_temp"
                 )
                 os.makedirs(temp_inference_folder, exist_ok=True)
-                print(f"create dir {temp_inference_folder=} {preview_prompts_this_rank=}")
 
                 # Each rank gets its own unique prompt from its current batch data
                 preview_prompts_this_rank = inference_config.prompts + caption[:1]
+                print(f"create dir {temp_inference_folder=} {preview_prompts_this_rank=}")
 
                 # Combine the main inference config with any extra ones
                 all_inference_configs = [inference_config] + extra_inference_config
