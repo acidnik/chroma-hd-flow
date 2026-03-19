@@ -521,6 +521,8 @@ def inference_wrapper(
 
     T5_MAX_LENGTH = t5_max_length
 
+    ae.to(rank)
+
     with torch.no_grad():
         with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
             noise = get_noise(len(PROMPT), HEIGHT, WIDTH, rank, torch.bfloat16, seed)
