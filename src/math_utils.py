@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 
+_warned_import_error = False
 
 def cosine_optimal_transport(X, Y, backend="auto"):
     """
@@ -33,7 +34,10 @@ def cosine_optimal_transport(X, Y, backend="auto"):
         try:
             return _cuda_assignment(C)
         except (ImportError, RuntimeError) as e:
-            print(f"Falling back to SciPy implementation: {str(e)}")
+            global _warned_import_error
+            if not _warned_import_error:
+                print(f"Falling back to SciPy implementation: {str(e)}")
+                _warned_import_error = True
             return _scipy_assignment(C)
 
 
