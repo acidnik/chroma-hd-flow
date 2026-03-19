@@ -1110,7 +1110,7 @@ def train_chroma(rank, world_size, debug=False, json_config="training_config.jso
 
                         # Save the combined grid to its final destination
                         final_image_path = os.path.join(
-                            inference_config.inference_folder, f"{counter}.jpg"
+                            inference_config.inference_folder, f"{int(time.time())}.jpg"
                         )
                         save_image(final_grid, final_image_path)
                         print(f"Combined image grid saved to {final_image_path}")
