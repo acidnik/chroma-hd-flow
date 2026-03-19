@@ -999,6 +999,9 @@ def train_chroma(rank, world_size, debug=False, json_config="training_config.jso
                 dist.barrier()
 
             if (counter + 1) % inference_config.inference_every == 0:
+                # Move model back to GPU after checkpoint save
+                model.to(rank)
+
                 # Part 1: Each rank generates and saves its own images and prompts to temporary files.
                 # A temporary subdirectory is used to avoid clutter and simplify cleanup.
                 temp_inference_folder = os.path.join(
